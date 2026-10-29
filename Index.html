@@ -76,7 +76,7 @@ footer{text-align:center;color:#aaa;border-top:1px solid var(--line);padding:18p
       <div><label for="notes">Observações (opcional)</label><textarea id="notes" placeholder="Ponto da carne, sem cebola, referência..."></textarea></div>
       <button class="send" type="submit">Enviar pedido pelo WhatsApp</button>
     </form>
-    <div class="delivery">🛵 <strong>Taxa grátis</strong> para Guarani, Tocantins, Taiaman e Dona Zulmira. Para outros bairros, confirme a taxa pelo WhatsApp.</div>
+    <div class="delivery">🛵 <strong>Taxa </strong> para Guarani, Tocantins, Taiaman e Dona Zulmira e para outros bairros, confirme a taxa pelo WhatsApp.</div>
     <p class="note">Ao tocar em “Enviar pedido”, o WhatsApp será aberto com a mensagem pronta. Confira e toque em enviar dentro do WhatsApp para concluir o pedido.</p>
   </aside>
 </main>
@@ -311,7 +311,7 @@ document.getElementById("orderForm").addEventListener("submit",e=>{
   `👤 *Cliente:* ${name}`,
   `📱 *Telefone:* ${phone}`,
   `📍 *Endereço:* ${address} — ${neighborhood}`,
-  `🛵 *Entrega:* ${free?"Taxa grátis (bairro atendido)":"Confirmar taxa de entrega"}`,
+  `🛵 *Entrega:* ${free?"Taxa (bairro atendido)":"Confirmar taxa de entrega"}`,
   `💳 *Pagamento:* ${payment}${payment==="Dinheiro"&&change?" (troco para "+change+")":""}`,
   ...(notes?[`📝 *Observações:* ${notes}`]:[]),
   ``,
