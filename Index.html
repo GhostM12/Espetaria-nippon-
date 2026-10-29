@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#111111">
+<meta name="description" content="Confira o cardápio da Nippon Espetaria e envie seu pedido diretamente pelo WhatsApp.">
+<meta name="color-scheme" content="dark light">
+<title>Nippon Espetaria | Faça seu pedido</title>
+<style>
+:root{--bg:#101010;--panel:#1b1b1b;--panel2:#242424;--red:#ed171f;--yellow:#ffdc20;--text:#fff;--muted:#c8c8c8;--line:#3a3a3a;--green:#20c76a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
+header{background:linear-gradient(120deg,#171717,#350b0b 58%,#151515);border-bottom:2px solid var(--red);padding:22px 16px 18px;text-align:center}
+.logo{display:inline-flex;align-items:center;justify-content:center;border:3px solid var(--yellow);border-radius:50%;width:66px;height:66px;font-weight:1000;font-size:24px;color:var(--yellow);margin-bottom:7px}
+h1{margin:0;font-size:clamp(26px,6vw,42px);font-weight:1000;letter-spacing:2px}h1 span{color:var(--red)}header p{margin:6px 0 0;color:#eee;font-weight:700}
+.wrap{max-width:1050px;margin:auto;padding:16px;display:flex;flex-direction:column;gap:18px}
+#menu{order:1}.cart{order:2}
+.section-title{font-size:22px;font-weight:900;text-transform:uppercase;color:var(--yellow);margin:10px 0 12px;border-left:5px solid var(--red);padding-left:10px}
+.category{margin-bottom:22px}.products{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.product{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.product h3{font-size:15px;line-height:1.25;margin:0;text-transform:uppercase}.product .desc{font-size:12px;color:var(--muted);line-height:1.35;min-height:16px}.price{font-size:18px;font-weight:900;color:var(--yellow);margin-top:auto}
+.add{border:0;border-radius:8px;background:var(--red);color:#fff;font-weight:900;font-size:14px;padding:10px;cursor:pointer}.add:active{transform:scale(.98)}
+.cart{background:var(--panel);border:1px solid #4b2929;border-radius:14px;padding:16px;align-self:stretch;position:static;order:2}
+.cart h2{margin:0 0 12px;font-size:22px}.empty{color:var(--muted);font-size:14px;padding:10px 0}
+.cart-item{border-bottom:1px solid var(--line);padding:10px 0;display:grid;grid-template-columns:1fr auto;gap:8px}.cart-item strong{font-size:13px}.cart-item small{display:block;color:var(--yellow);margin-top:4px}
+.qty{display:flex;align-items:center;gap:8px}.qty button{width:28px;height:28px;border:0;border-radius:7px;background:#383838;color:white;font-size:18px;cursor:pointer}.qty span{min-width:12px;text-align:center}
+.total{display:flex;justify-content:space-between;font-size:20px;font-weight:900;padding:16px 0;border-top:1px solid var(--line);margin-top:8px}.total b{color:var(--yellow)}
+form{display:grid;gap:10px;margin-top:8px}label{font-size:12px;color:#ddd;font-weight:700;display:block;margin-bottom:5px}input,textarea,select{width:100%;background:#111;border:1px solid #454545;border-radius:8px;padding:11px;color:#fff;font:inherit;font-size:14px}textarea{resize:vertical;min-height:65px}
+.send{width:100%;padding:14px;background:var(--green);color:#071b0e;border:0;border-radius:9px;font-size:16px;font-weight:1000;cursor:pointer;margin-top:4px}.send:disabled{opacity:.45;cursor:not-allowed}
+.note{font-size:11px;color:#aaa;line-height:1.5;margin:10px 0 0}.delivery{background:#28230a;color:#ffe86a;padding:11px;border-radius:9px;font-size:12px;line-height:1.5;margin-top:12px}
+footer{text-align:center;color:#aaa;border-top:1px solid var(--line);padding:18px;font-size:12px}
+.toast{display:none;background:#173a26;border:1px solid #2b8b53;border-radius:8px;padding:10px;font-size:13px;margin-bottom:10px}
+/* Modal de escolha de espeto */
+#espetoModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:999;align-items:center;justify-content:center;padding:16px}
+.modal-content{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;width:100%;max-width:420px;display:flex;flex-direction:column;gap:12px;max-height:90vh;overflow-y:auto}
+.modal-content h3{margin:0;font-size:18px;color:var(--yellow)}
+.modal-content p{margin:0;font-size:13px;color:var(--muted)}
+.espeto-option-btn{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:12px;color:#fff;text-align:left;font-size:14px;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.espeto-option-btn:hover{border-color:var(--yellow);background:#2c2c2c}
+.modal-close{background:#383838;color:#fff;border:0;border-radius:8px;padding:10px;font-weight:bold;cursor:pointer;margin-top:4px}
+@media(max-width:760px){.wrap{padding:12px}.products{grid-template-columns:repeat(2,minmax(0,1fr))}.product{padding:11px}.product h3{font-size:13px}.price{font-size:16px}}
+@media(max-width:380px){.products{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">N</div>
+  <h1>NIPPON <span>ESPETARIA</span></h1>
+  <p>🔥 Sabor que faz a diferença 🔥</p>
+  <p>Escolha seus produtos e peça pelo WhatsApp</p>
+</header>
+<main class="wrap">
+  <section id="menu" style="order:1">
+    <div class="category"><div class="section-title">🥢 Espetos</div><div class="products" id="espeto"></div></div>
+    <div class="category"><div class="section-title">🍟 Porções</div><div class="products" id="porcao"></div></div>
+    <div class="category"><div class="section-title">🍚 Acompanhamentos</div><div class="products" id="acomp"></div></div>
+    <div class="category"><div class="section-title">⭐ Destaques</div><div class="products" id="destaques"></div></div>
+    <div class="category"><div class="section-title">🥤 Refrigerantes e águas</div><div class="products" id="refri"></div></div>
+    <div class="category"><div class="section-title">🍺 Cervejas</div><div class="products" id="cerveja"></div></div>
+  </section>
+  <aside class="cart">
+    <h2>🛒 Seu pedido</h2>
+    <div id="toast" class="toast"></div>
+    <div id="cartItems"><div class="empty">Seu carrinho está vazio. Adicione produtos do cardápio.</div></div>
+    <div class="total"><span>Total</span><b id="total">R$ 0,00</b></div>
+    <form id="orderForm">
+      <div><label for="name">Seu nome *</label><input id="name" required autocomplete="name" placeholder="Nome completo"></div>
+      <div><label for="phone">Telefone para contato *</label><input id="phone" required inputmode="tel" autocomplete="tel" placeholder="(34) 99999-9999"></div>
+      <div><label for="neighborhood">Bairro *</label><select id="neighborhood" required><option value="">Selecione seu bairro</option><option>Guarani</option><option>Tocantins</option><option>Taiaman</option><option>Dona Zulmira</option><option>Outro bairro</option></select></div>
+      <div><label for="address">Rua, número e complemento *</label><input id="address" required autocomplete="street-address" placeholder="Rua, número, casa/apto"></div>
+      <div><label for="payment">Forma de pagamento *</label><select id="payment" required><option value="">Selecione</option><option>Pix</option><option>Dinheiro</option><option>Cartão de débito</option><option>Cartão de crédito</option></select></div>
+      <div id="changeWrap" style="display:none"><label for="change">Troco para quanto?</label><input id="change" placeholder="Ex.: R$ 50,00"></div>
+      <div><label for="notes">Observações (opcional)</label><textarea id="notes" placeholder="Ponto da carne, sem cebola, referência..."></textarea></div>
+      <button class="send" type="submit">Enviar pedido pelo WhatsApp</button>
+    </form>
+    <div class="delivery">🛵 <strong>Taxa grátis</strong> para Guarani, Tocantins, Taiaman e Dona Zulmira. Para outros bairros, confirme a taxa pelo WhatsApp.</div>
+    <p class="note">Ao tocar em “Enviar pedido”, o WhatsApp será aberto com a mensagem pronta. Confira e toque em enviar dentro do WhatsApp para concluir o pedido.</p>
+  </aside>
+</main>
+
+<!-- Modal de escolha do espeto -->
+<div id="espetoModal">
+  <div class="modal-content">
+    <h3 id="modalTitle">Escolha o espeto</h3>
+    <p id="modalDesc">Selecione uma opção de espeto inclusa:</p>
+    <div id="modalOptionsList" style="display:flex;flex-direction:column;gap:8px;margin-top:4px"></div>
+    <button class="modal-close" type="button" id="modalCloseBtn">Cancelar</button>
+  </div>
+</div>
+
+<footer>Nippon Espetaria • Rua José Honorato Mendes, 350 — Taiaman<br>Pedidos pelo WhatsApp: (34) 99682-0592</footer>
+<script>
+const phoneWhatsApp = "5534996820592";
+const products = [
+ {cat:"espeto",name:"Almôndega (queijo e bacon)",price:10},
+ {cat:"espeto",name:"Carne",price:10},
+ {cat:"espeto",name:"Franbacon",price:10},
+ {cat:"espeto",name:"Linguiça com pimenta",price:10},
+ {cat:"espeto",name:"Linguiça sem pimenta",price:10},
+ {cat:"espeto",name:"Provolone",price:11},
+ {cat:"espeto",name:"Contrafilé",price:12},
+ {cat:"espeto",name:"Coração",price:12},
+ {cat:"espeto",name:"Cupim",price:12},
+ {cat:"espeto",name:"Tulipa",price:12},
+ {cat:"porcao",name:"Batata simples",price:23.90},
+ {cat:"porcao",name:"Pastelzinho",price:29.90},
+ {cat:"porcao",name:"Bolinho de arroz",price:31.90},
+ {cat:"porcao",name:"Calabresa acebolada",price:31.90},
+ {cat:"porcao",name:"Batata completa",price:29.90},
+ {cat:"porcao",name:"Mini Maia",price:34.90},
+ {cat:"porcao",name:"Torresmo",price:39.90},
+ {cat:"porcao",name:"Filé de peixe",price:42.90},
+ {cat:"acomp",name:"Mandioca cozida",price:6},
+ {cat:"acomp",name:"Porção vinagrete",price:6.50},
+ {cat:"acomp",name:"Porção arroz",price:7},
+ {cat:"acomp",name:"Feijão tropeiro",price:8},
+ {cat:"destaques",name:"Espeto completo",price:20},
+ {cat:"destaques",name:"Jantinha completa",price:22},
+ {cat:"refri",name:"Água sem gás",price:3},
+ {cat:"refri",name:"Água com gás",price:3.50},
+ {cat:"refri",name:"Refrigerante lata",price:6},
+ {cat:"refri",name:"Coca-Cola 2L",price:11.90},
+ {cat:"refri",name:"Guaraná Mineiro 2L",price:9.90},
+ {cat:"refri",name:"Guaraná Mineiro 1,5L",price:9},
+ {cat:"refri",name:"Coca-Cola 1L",price:7.99},
+ {cat:"cerveja",name:"Império Pilsen",price:9.90},
+ {cat:"cerveja",name:"Caipirinha",price:10.99},
+ {cat:"cerveja",name:"Império Lager",price:10.99},
+ {cat:"cerveja",name:"Amstel 600ml",price:11.90},
+ {cat:"cerveja",name:"Brahma 600ml",price:11.90},
+ {cat:"cerveja",name:"Barrigudinha",price:5.50},
+ {cat:"cerveja",name:"Heineken 600ml",price:14.99},
+ {cat:"cerveja",name:"Original 600ml",price:14.99}
+];
+const cart = new Map();
+const money = n => n.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+
+function showToast(message) {
+ const toast = document.getElementById("toast");
+ toast.textContent = message;
+ toast.style.display = "block";
+ window.clearTimeout(window.nipponToastTimer);
+ window.nipponToastTimer = window.setTimeout(() => { toast.style.display = "none"; }, 1800);
+}
+
+function openEspetoModal(destaqueName, basePrice) {
+ const modal = document.getElementById("espetoModal");
+ const list = document.getElementById("modalOptionsList");
+ document.getElementById("modalTitle").textContent = destaqueName;
+ document.getElementById("modalDesc").textContent = `Escolha o espeto incluso (R$ ${basePrice.toFixed(2).replace('.', ',')}):`;
+ list.innerHTML = "";
+
+ const espetos = products.filter(p => p.cat === "espeto");
+ for (const esp of espetos) {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "espeto-option-btn";
+  btn.innerHTML = `<span>${esp.name}</span><span style="color:var(--yellow)">Incluso</span>`;
+  btn.addEventListener("click", () => {
+   const itemName = `${destaqueName} (${esp.name})`;
+   cart.set(itemName, (cart.get(itemName) || 0) + 1);
+   renderCart();
+   showToast(itemName + " adicionado ao pedido.");
+   modal.style.display = "none";
+  });
+  list.appendChild(btn);
+ }
+ modal.style.display = "flex";
+}
+
+document.getElementById("modalCloseBtn").addEventListener("click", () => {
+ document.getElementById("espetoModal").style.display = "none";
+});
+
+function renderMenu(){
+ for(const p of products){
+  const el = document.createElement("article");
+  el.className = "product";
+  const title = document.createElement("h3");
+  title.textContent = p.name;
+  const desc = document.createElement("div");
+  desc.className = "desc";
+  desc.textContent = p.cat === "destaques" ? "Destaque da casa" :
+    p.cat === "espeto" ? "Espeto preparado na hora" :
+    p.cat === "acomp" ? "Acompanhamento" : "Peça agora";
+  const price = document.createElement("div");
+  price.className = "price";
+  price.textContent = money(p.price);
+  const button = document.createElement("button");
+  button.className = "add";
+  button.type = "button";
+  button.textContent = "+ Adicionar";
+  
+  if (p.name === "Espeto completo" || p.name === "Jantinha completa") {
+   button.addEventListener("click", () => {
+    openEspetoModal(p.name, p.price);
+   });
+  } else {
+   button.addEventListener("click", () => {
+    cart.set(p.name, (cart.get(p.name) || 0) + 1);
+    renderCart();
+    showToast(p.name + " adicionado ao pedido.");
+   });
+  }
+
+  el.append(title, desc, price, button);
+  document.getElementById(p.cat).appendChild(el);
+ }
+}
+
+function renderCart(){
+ const root=document.getElementById("cartItems");root.innerHTML="";
+ if(!cart.size)root.innerHTML='<div class="empty">Seu carrinho está vazio. Adicione produtos do cardápio.</div>';
+ let total=0;
+ for(const [name,qty] of cart){
+  const baseName = name.split(" (")[0];
+  const p=products.find(x=>x.name===baseName);
+  const itemPrice = p ? p.price : 0;
+  total += itemPrice * qty;
+
+  const row = document.createElement("div");
+  row.className = "cart-item";
+  const info = document.createElement("div");
+  const title = document.createElement("strong");
+  title.textContent = name;
+  const details = document.createElement("small");
+  details.textContent = `${money(itemPrice)} cada · ${money(itemPrice * qty)}`;
+  info.append(title, details);
+  const controls = document.createElement("div");
+  controls.className = "qty";
+  const decrease = document.createElement("button");
+  decrease.type = "button";
+  decrease.setAttribute("aria-label", `Diminuir quantidade de ${name}`);
+  decrease.textContent = "−";
+  const count = document.createElement("span");
+  count.textContent = String(qty);
+  const increase = document.createElement("button");
+  increase.type = "button";
+  increase.setAttribute("aria-label", `Aumentar quantidade de ${name}`);
+  increase.textContent = "+";
+  decrease.addEventListener("click", () => {
+   if (qty <= 1) cart.delete(name);
+   else cart.set(name, qty - 1);
+   renderCart();
+  });
+  increase.addEventListener("click", () => { cart.set(name, qty + 1); renderCart(); });
+  controls.append(decrease, count, increase);
+  row.append(info, controls);
+  root.appendChild(row);
+ }
+ document.getElementById("total").textContent=money(total);
+ document.querySelector(".send").disabled=cart.size===0;
+}
+document.getElementById("payment").addEventListener("change",e=>{document.getElementById("changeWrap").style.display=e.target.value==="Dinheiro"?"block":"none"});
+function nextOrderNumber(){
+ let n = 1001;
+ try {
+  n = Number(localStorage.getItem("nippon_order_seq") || "1000") + 1;
+  if (!Number.isFinite(n) || n < 1001) n = 1001;
+  localStorage.setItem("nippon_order_seq", String(n));
+ } catch (error) {
+  n = 1001 + Math.floor(Math.random() * 8999);
+ }
+ return "NIP-" + String(n).padStart(5, "0");
+}
+document.getElementById("orderForm").addEventListener("submit",e=>{
+ e.preventDefault();if(!cart.size){alert("Adicione pelo menos um produto.");return}
+ const name=document.getElementById("name").value.trim();
+ const phone=document.getElementById("phone").value.trim();
+ const neighborhood=document.getElementById("neighborhood").value;
+ const address=document.getElementById("address").value.trim();
+ const payment=document.getElementById("payment").value;
+ const change=document.getElementById("change").value.trim();
+ const notes=document.getElementById("notes").value.trim();
+ const order=nextOrderNumber();
+ let total=0, lines=[];
+ for(const [item,qty] of cart){
+  const baseName = item.split(" (")[0];
+  const p=products.find(x=>x.name===baseName);
+  const itemPrice = p ? p.price : 0;
+  total+=itemPrice*qty;
+  lines.push(`• ${qty}x ${item} — ${money(itemPrice*qty)}`);
+ }
+ const free=["Guarani","Tocantins","Taiaman","Dona Zulmira"].includes(neighborhood);
+ const msg=[
+  `🍢 *NOVO PEDIDO — NIPPON ESPETARIA*`,
+  `🧾 *Pedido: ${order}*`,
+  ``,
+  `*ITENS DO PEDIDO*`,
+  ...lines,
+  ``,
+  `*TOTAL: ${money(total)}*`,
+  ``,
+  `👤 *Cliente:* ${name}`,
+  `📱 *Telefone:* ${phone}`,
+  `📍 *Endereço:* ${address} — ${neighborhood}`,
+  `🛵 *Entrega:* ${free?"Taxa grátis (bairro atendido)":"Confirmar taxa de entrega"}`,
+  `💳 *Pagamento:* ${payment}${payment==="Dinheiro"&&change?" (troco para "+change+")":""}`,
+  ...(notes?[`📝 *Observações:* ${notes}`]:[]),
+  ``,
+  `Por favor, confirme o recebimento do pedido ${order}.`
+ ].join("\n");
+ const whatsappUrl = "https://wa.me/" + phoneWhatsApp + "?text=" + encodeURIComponent(msg);
+ window.location.href = whatsappUrl;
+});
+renderMenu();renderCart();
+</script>
+</body>
+</html>
